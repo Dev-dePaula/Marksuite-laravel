@@ -18,7 +18,7 @@ async function request(method, path, body) {
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     if (res.status === 401 && path !== '/auth/login' && path !== '/auth/register') window.dispatchEvent(new Event('marksuite:logout'));
-    throw new Error(data.error || `Erro ${res.status}`);
+    throw Object.assign(new Error(data.error || `Erro ${res.status}`), { data, status: res.status });
   }
   return data;
 }

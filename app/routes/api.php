@@ -8,12 +8,17 @@ Route::get('/status', fn () => ['status' => 'online', 'timestamp' => now()]);
 // ---------- público ----------
 Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:10,60');
 Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:20,15');
-Route::get('/public/doc/{token}', [DocumentController::class, 'publicDoc']);
+Route::get('/public/doc/{token}', [DocumentController::class, 'publicDoc'])->middleware('throttle:public');
 
 // ---------- autenticado + isolado por empresa-cliente ----------
-Route::middleware(['auth:sanctum', 'tenant', \App\Http\Middleware\TrackActivity::class])->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:api', 'tenant', \App\Http\Middleware\TrackActivity::class])->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/logout-others', [AuthController::class, 'logoutOthers']);
+    Route::post('/auth/password', [AuthController::class, 'changePassword'])->middleware('throttle:6,15');
+    Route::post('/auth/2fa/setup', [AuthController::class, 'twoFactorSetup'])->middleware('throttle:10,15');
+    Route::post('/auth/2fa/enable', [AuthController::class, 'twoFactorEnable'])->middleware('throttle:10,15');
+    Route::post('/auth/2fa/disable', [AuthController::class, 'twoFactorDisable'])->middleware('throttle:6,15');
 
     // utilizadores da empresa
     Route::get('/users', [AuthController::class, 'users']);
@@ -45,13 +50,13 @@ Route::middleware(['auth:sanctum', 'tenant', \App\Http\Middleware\TrackActivity:
     // prospecção por IA
     Route::get('/prospect/config', [ProspectController::class, 'showConfig']);
     Route::put('/prospect/config', [ProspectController::class, 'saveConfig']);
-    Route::post('/prospect/profile', [ProspectController::class, 'profile'])->middleware('canwrite:opportunities');
-    Route::post('/prospect/runs', [ProspectController::class, 'startRun'])->middleware('canwrite:opportunities');
+    Route::post('/prospect/profile', [ProspectController::class, 'profile'])->middleware(['canwrite:opportunities', 'throttle:ai']);
+    Route::post('/prospect/runs', [ProspectController::class, 'startRun'])->middleware(['canwrite:opportunities', 'throttle:ai']);
     Route::get('/prospect/runs', [ProspectController::class, 'runs']);
     Route::get('/prospect/runs/{id}', [ProspectController::class, 'run']);
     Route::get('/prospect/{id}/pdf', [ProspectController::class, 'pdfView']);
     Route::put('/prospect/{id}', [ProspectController::class, 'update'])->middleware('canwrite:opportunities');
-    Route::post('/prospect/{id}/send', [ProspectController::class, 'sendProposal'])->middleware('canwrite:opportunities');
+    Route::post('/prospect/{id}/send', [ProspectController::class, 'sendProposal'])->middleware(['canwrite:opportunities', 'throttle:30,60']);
     Route::post('/prospect/{id}/reply', [ProspectController::class, 'reply'])->middleware('canwrite:opportunities');
     Route::post('/prospect/{id}/optout', [ProspectController::class, 'optout'])->middleware('canwrite:opportunities');
 

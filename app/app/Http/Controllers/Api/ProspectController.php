@@ -74,6 +74,16 @@ class ProspectController extends Controller
         return mb_substr(trim((string) $v), 0, $max);
     }
 
+    /** Só http(s): o texto vem da web/IA e acaba em <a href>, por isso `javascript:`/`data:` são descartados (anti-XSS). */
+    private static function url($v, int $max): ?string
+    {
+        $s = self::clean($v, $max);
+        if ($s === null) return null;
+        if (!preg_match('~^[a-z][a-z0-9+.-]*:~i', $s)) $s = 'https://' . $s;
+        if (!preg_match('~^https?://[^\s<>"\']+$~i', $s) || !filter_var($s, FILTER_VALIDATE_URL)) return null;
+        return $s;
+    }
+
     private static function list($v): array
     {
         return is_array($v) ? array_slice(array_values(array_filter(array_map(fn ($x) => trim((string) $x), $v))), 0, 8) : [];
@@ -104,7 +114,7 @@ class ProspectController extends Controller
             self::execute($run->id, $max);
         } else {
             // Processo independente: a pesquisa pode demorar minutos e não deve prender o pedido; o ecrã consulta o estado.
-            $cmd = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(base_path('artisan')) . " prospect:run {$run->id} $tenant $max";
+            $cmd = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(base_path('artisan')) . ' prospect:run ' . (int) $run->id . ' ' . (int) $tenant . ' ' . (int) $max;
             if (PHP_OS_FAMILY === 'Windows') pclose(popen('start /B "" ' . $cmd . ' > NUL 2>&1', 'r'));
             else exec($cmd . ' > /dev/null 2>&1 &');
         }
@@ -141,7 +151,7 @@ class ProspectController extends Controller
                 if ($email && Prospect::where('email', $email)->where('runId', '!=', $runId)->exists()) continue;
                 Prospect::create([
                     'runId' => $runId, 'name' => $name, 'email' => $email, 'phone' => self::clean($x['phone'] ?? null, 60),
-                    'website' => self::clean($x['website'] ?? null, 255), 'city' => self::clean($x['city'] ?? null, 120), 'sourceUrl' => self::clean($x['sourceUrl'] ?? null, 500),
+                    'website' => self::url($x['website'] ?? null, 255), 'city' => self::clean($x['city'] ?? null, 120), 'sourceUrl' => self::url($x['sourceUrl'] ?? null, 500),
                     'pains' => json_encode(self::list($x['pains'] ?? null), JSON_UNESCAPED_UNICODE), 'solutions' => json_encode(self::list($x['solutions'] ?? null), JSON_UNESCAPED_UNICODE),
                     'proposal' => self::clean($x['intro'] ?? null, 1000), 'status' => 'NOVO',
                 ]);

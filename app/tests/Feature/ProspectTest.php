@@ -21,7 +21,7 @@ class ProspectTest extends TestCase
 
     private function register(string $company, string $email): array
     {
-        $r = $this->postJson('/api/auth/register', ['companyName' => $company, 'name' => 'Admin', 'email' => $email, 'password' => 'segredo123', 'demo' => false])->assertStatus(201);
+        $r = $this->postJson('/api/auth/register', ['companyName' => $company, 'name' => 'Admin', 'email' => $email, 'password' => 'Segredo12345', 'demo' => false])->assertStatus(201);
         return ['h' => ['Authorization' => 'Bearer ' . $r->json('token')], 'tenant' => $r->json('user.tenantId')];
     }
 

@@ -11,8 +11,8 @@ class User extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 
     public static $snakeAttributes = false;
     protected $guarded = [];
-    protected $hidden = ['passwordHash'];
-    protected $casts = ['active' => 'boolean', 'isOwner' => 'boolean'];
+    protected $hidden = ['passwordHash', 'totpSecret', 'totpRecovery', 'totpLastStep', 'failedLogins', 'lockedUntil'];
+    protected $casts = ['active' => 'boolean', 'isOwner' => 'boolean', 'totpEnabled' => 'boolean', 'lockedUntil' => 'datetime', 'passwordChangedAt' => 'datetime'];
 
     public function getAuthPassword() { return $this->passwordHash; }
     public function getAuthPasswordName() { return 'passwordHash'; }

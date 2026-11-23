@@ -222,8 +222,10 @@ const W = {
 };
 export const can = (user, mod) => !!user && W[mod].includes(user.role);
 
+// Anti CSV/Formula injection: células que começam por = + - @ (ou tab/CR) seriam executadas pelo Excel.
+const safeCell = (v) => { const s = String(v ?? ''); return /^[=+\-@\t\r]/.test(s) && Number.isNaN(Number(s)) ? "'" + s : s; };
 export function csv(name, head, rows) {
-  const body = [head, ...rows].map((r) => r.map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\n');
+  const body = [head, ...rows].map((r) => r.map((v) => `"${safeCell(v).replace(/"/g, '""')}"`).join(';')).join('\n');
   const url = URL.createObjectURL(new Blob(['﻿' + body], { type: 'text/csv;charset=utf-8' }));
   const a = document.createElement('a');
   a.href = url; a.download = name; a.click();

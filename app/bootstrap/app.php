@@ -22,6 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['tenant' => TenantContext::class, 'canwrite' => CanWrite::class]);
         $middleware->trustProxies(at: '*');
+        $middleware->prepend(\App\Http\Middleware\BlockedIp::class);
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         // API sem sessão: nunca redirecciona para /login, responde 401 JSON.
         $middleware->redirectGuestsTo(fn () => null);
     })

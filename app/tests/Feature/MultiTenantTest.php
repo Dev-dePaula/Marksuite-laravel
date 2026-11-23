@@ -19,7 +19,7 @@ class MultiTenantTest extends TestCase
 
     private function register(string $company, string $email, bool $demo = false): array
     {
-        $r = $this->postJson('/api/auth/register', ['companyName' => $company, 'name' => 'Admin ' . $company, 'email' => $email, 'password' => 'segredo123', 'demo' => $demo]);
+        $r = $this->postJson('/api/auth/register', ['companyName' => $company, 'name' => 'Admin ' . $company, 'email' => $email, 'password' => 'Segredo12345', 'demo' => $demo]);
         $r->assertStatus(201);
         return ['h' => ['Authorization' => 'Bearer ' . $r->json('token')], 'user' => $r->json('user')];
     }
@@ -111,7 +111,7 @@ class MultiTenantTest extends TestCase
         // credenciais erradas
         $this->postJson('/api/auth/login', ['username' => 'cfo@delta.ao', 'password' => 'errada'])->assertStatus(401);
         // email duplicado
-        $this->postJson('/api/auth/register', ['companyName' => 'Outra', 'name' => 'Xavier', 'email' => 'd@delta.ao', 'password' => 'segredo123'])->assertStatus(409);
+        $this->postJson('/api/auth/register', ['companyName' => 'Outra', 'name' => 'Xavier', 'email' => 'd@delta.ao', 'password' => 'Segredo12345'])->assertStatus(409);
     }
 
     public function test_modulos_principais_respondem(): void

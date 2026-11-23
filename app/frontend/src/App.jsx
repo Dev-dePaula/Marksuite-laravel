@@ -27,7 +27,8 @@ const NAV = [
 
 function Login({ onLogin }) {
   const [mode, setMode] = useState('login');
-  const [f, setF] = useState({ username: '', password: '', companyName: '', name: '', email: '', demo: true });
+  const [f, setF] = useState({ username: '', password: '', companyName: '', name: '', email: '', demo: true, code: '' });
+  const [need2fa, setNeed2fa] = useState(false);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
@@ -38,10 +39,10 @@ function Login({ onLogin }) {
     try {
       const r = reg
         ? await api.post('/auth/register', { companyName: f.companyName, name: f.name, email: f.email, password: f.password, demo: f.demo })
-        : await api.post('/auth/login', { username: f.username, password: f.password });
+        : await api.post('/auth/login', { username: f.username, password: f.password, ...(need2fa ? { code: f.code } : {}) });
       setToken(r.token);
       onLogin(r.user);
-    } catch (x) { setErr(x.message); } finally { setBusy(false); }
+    } catch (x) { if (x.data?.need2fa) setNeed2fa(true); setErr(x.message); } finally { setBusy(false); }
   };
   return (
     <div id="login">
@@ -66,7 +67,8 @@ function Login({ onLogin }) {
             <div className="field"><label htmlFor="em">Email</label><input id="em" type="email" value={f.email} onChange={set('email')} autoComplete="email" required /></div>
           </>}
           {!reg && <div className="field"><label htmlFor="user">Email ou utilizador</label><input id="user" value={f.username} onChange={set('username')} autoComplete="username" required /></div>}
-          <div className="field"><label htmlFor="pass">Palavra-passe{reg ? ' (mín. 8 caracteres)' : ''}</label><input id="pass" type="password" value={f.password} onChange={set('password')} autoComplete={reg ? 'new-password' : 'current-password'} required minLength={reg ? 8 : 1} /></div>
+          <div className="field"><label htmlFor="pass">Palavra-passe{reg ? ' (mín. 10 caracteres, com letras e números)' : ''}</label><input id="pass" type="password" value={f.password} onChange={set('password')} autoComplete={reg ? 'new-password' : 'current-password'} required minLength={reg ? 10 : 1} /></div>
+          {!reg && need2fa && <div className="field"><label htmlFor="code">Código de autenticação (ou código de recuperação)</label><input id="code" value={f.code} onChange={set('code')} autoComplete="one-time-code" inputMode="numeric" autoFocus required /></div>}
           {reg && <label style={{ display: 'flex', gap: 8, alignItems: 'center', margin: '0 0 12px', fontSize: 13 }}><input type="checkbox" checked={f.demo} onChange={set('demo')} /> Carregar dados de demonstração (recomendado para testar)</label>}
           <button className="btn full" disabled={busy}>{busy ? 'Aguarde…' : reg ? 'Criar conta e entrar' : 'Entrar'}</button>
           <div className="login-err" role="alert">{err}</div>
