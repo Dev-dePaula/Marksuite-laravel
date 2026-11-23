@@ -1,0 +1,8 @@
+composer.phar
+app/frontend/node_modules/
+app/public/app/
+app/database/*.sqlite*
+app/storage/logs/
+app/storage/framework/cache/data/
+app/storage/framework/sessions/
+app/storage/framework/views/
