@@ -28,6 +28,7 @@ export const Bar = ({ value, tone }) => (
 
 // ---------- ícones ----------
 const PATHS = {
+  play: 'M12 3a9 9 0 100 18 9 9 0 000-18zM10 8l6 4-6 4z',
   home: 'M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z',
   build: 'M3 3h18v18H3zM9 8h2M9 12h2M9 16h2M15 8h0M15 12h0M15 16h0',
   crm: 'M3 7h18v12H3zM8 7V5h8v2M3 12h18',

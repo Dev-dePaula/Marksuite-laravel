@@ -15,7 +15,7 @@ class SecurityHeaders
         $set = fn (string $k, string $v) => $h->has($k) ? null : $h->set($k, $v);
 
         $set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-            . "font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-src 'self' blob:; object-src 'none'; "
+            . "font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; frame-src 'self' blob: https://www.youtube-nocookie.com; object-src 'none'; "
             . "base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests");
         $set('X-Frame-Options', 'DENY');
         $set('X-Content-Type-Options', 'nosniff');

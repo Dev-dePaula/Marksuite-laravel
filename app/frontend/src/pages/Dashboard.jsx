@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Bar, CartesianGrid, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from 'recharts';
 import { Ac, A, Bar as ProgressBar, Icon, Loader, Tag, FormModal, hcol, useApi, useSave, fdate } from '../ui.jsx';
 import { api } from '../api.js';
+import Onboarding from './Onboarding.jsx';
 
 const MON = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 const monthLabel = (k) => MON[Number(k.slice(5, 7)) - 1];
@@ -27,6 +28,8 @@ export default function Dashboard({ user, go, greet, now, weekday }) {
           <p>Aqui está o que precisa de saber hoje.</p>
           <div className="segs" />
         </div>
+
+        <Onboarding go={go} />
 
         <div className="grid g6" style={{ marginTop: 14 }}>
           <div className="panel kpi" style={{ display: 'flex', gap: 14, alignItems: 'center' }}>

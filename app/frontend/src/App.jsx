@@ -16,18 +16,19 @@ import Ai from './pages/Ai.jsx';
 import Settings from './pages/Settings.jsx';
 import Monitor from './pages/Monitor.jsx';
 import Analytics from './pages/Analytics.jsx';
+import Tutorial from './pages/Tutorial.jsx';
 
 const NAV = [
   ['cc', 'Centro de Comando', 'home', Dashboard], ['emp', 'Empresas', 'build', Companies], ['crm', 'Comercial (CRM)', 'crm', Crm], ['prosp', 'Prospecção IA', 'ai', Prospect],
   ['proj', 'Projectos', 'proj', Projects], ['fin', 'Financeiro', 'money', Finance], ['fat', 'Faturação', 'money', Billing], ['cont', 'Contabilidade', 'chart', Accounting], ['pes', 'Pessoas', 'people', People],
   ['ops', 'Operações', 'ops', Operations], ['decisoes', 'Decisões', 'check', Decisions], ['memoria', 'Memória Corporativa', 'brain', Memory],
   ['estr', 'Estratégia', 'target', Okr], ['bi', 'Relatórios (BI)', 'chart', Bi], ['analise', 'Central de Análise', 'chart', Analytics], ['ia', 'Automação & IA', 'ai', Ai],
-  ['uni', 'Universidade', 'cap', Courses], ['conf', 'Configurações', 'ops', Settings], ['mon', 'Monitorização', 'chart', Monitor],
+  ['uni', 'Universidade', 'cap', Courses], ['tut', 'Tutorial', 'play', Tutorial], ['conf', 'Configurações', 'ops', Settings], ['mon', 'Monitorização', 'chart', Monitor],
 ];
 
 function Login({ onLogin }) {
   const [mode, setMode] = useState('login');
-  const [f, setF] = useState({ username: '', password: '', companyName: '', name: '', email: '', demo: true, code: '' });
+  const [f, setF] = useState({ username: '', password: '', companyName: '', name: '', email: '', code: '' });
   const [need2fa, setNeed2fa] = useState(false);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
@@ -38,7 +39,7 @@ function Login({ onLogin }) {
     setBusy(true); setErr('');
     try {
       const r = reg
-        ? await api.post('/auth/register', { companyName: f.companyName, name: f.name, email: f.email, password: f.password, demo: f.demo })
+        ? await api.post('/auth/register', { companyName: f.companyName, name: f.name, email: f.email, password: f.password })
         : await api.post('/auth/login', { username: f.username, password: f.password, ...(need2fa ? { code: f.code } : {}) });
       setToken(r.token);
       onLogin(r.user);
@@ -69,7 +70,6 @@ function Login({ onLogin }) {
           {!reg && <div className="field"><label htmlFor="user">Email ou utilizador</label><input id="user" value={f.username} onChange={set('username')} autoComplete="username" required /></div>}
           <div className="field"><label htmlFor="pass">Palavra-passe{reg ? ' (mín. 10 caracteres, com letras e números)' : ''}</label><input id="pass" type="password" value={f.password} onChange={set('password')} autoComplete={reg ? 'new-password' : 'current-password'} required minLength={reg ? 10 : 1} /></div>
           {!reg && need2fa && <div className="field"><label htmlFor="code">Código de autenticação (ou código de recuperação)</label><input id="code" value={f.code} onChange={set('code')} autoComplete="one-time-code" inputMode="numeric" autoFocus required /></div>}
-          {reg && <label style={{ display: 'flex', gap: 8, alignItems: 'center', margin: '0 0 12px', fontSize: 13 }}><input type="checkbox" checked={f.demo} onChange={set('demo')} /> Carregar dados de demonstração (recomendado para testar)</label>}
           <button className="btn full" disabled={busy}>{busy ? 'Aguarde…' : reg ? 'Criar conta e entrar' : 'Entrar'}</button>
           <div className="login-err" role="alert">{err}</div>
           <p style={{ textAlign: 'center', marginTop: 14, fontSize: 13 }}>

@@ -1,0 +1,3 @@
+Coloque aqui os videos tutoriais (formato .mp4, codec H.264).
+Depois registe-os em frontend/src/pages/Tutorial.jsx, na lista LESSONS (campo src: '/tutoriais/nome.mp4').
+Opcional: poster '/tutoriais/nome.jpg' para a imagem de capa.
