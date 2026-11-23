@@ -29,7 +29,7 @@ export default function Dashboard({ user, go, greet, now, weekday }) {
           <div className="segs" />
         </div>
 
-        <Onboarding go={go} />
+        <Onboarding go={go} user={user} />
 
         <div className="grid g6" style={{ marginTop: 14 }}>
           <div className="panel kpi" style={{ display: 'flex', gap: 14, alignItems: 'center' }}>

@@ -16,6 +16,8 @@ class EmptyAccountTest extends TestCase
         $h = ['Authorization' => 'Bearer ' . $r->json('token')];
         foreach (['/api/opportunities', '/api/invoices', '/api/employees'] as $u) $this->getJson($u, $h)->assertOk()->assertJsonCount(0);
         $this->getJson('/api/dashboard', $h)->assertOk();
-        $this->getJson('/api/companies', $h)->assertOk()->assertJsonCount(1);
+        $cid = $this->getJson('/api/companies', $h)->assertOk()->assertJsonCount(1)->json('0.id');
+        $this->putJson("/api/companies/$cid/fiscal", ['nif' => '5417001234', 'address' => 'Rua A, Luanda', 'email' => 'geral@vazia.test', 'phone' => '923000000', 'iban' => 'AO06000000000000000000000', 'ivaRegime' => 'geral'], $h)->assertOk();
+        $this->getJson('/api/companies', $h)->assertJsonPath('0.nif', '5417001234');
     }
 }
