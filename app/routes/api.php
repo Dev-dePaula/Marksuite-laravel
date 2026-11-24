@@ -8,6 +8,8 @@ Route::get('/status', fn () => ['status' => 'online', 'timestamp' => now()]);
 // ---------- público ----------
 Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:10,60');
 Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:20,15');
+Route::post('/public/lead', [\App\Http\Controllers\PublicCaptureController::class, 'lead'])->middleware('throttle:10,60');
+Route::post('/public/feedback', [\App\Http\Controllers\PublicCaptureController::class, 'feedback'])->middleware('throttle:10,60');
 Route::get('/public/doc/{token}', [DocumentController::class, 'publicDoc'])->middleware('throttle:public');
 
 // ---------- autenticado + isolado por empresa-cliente ----------
@@ -24,6 +26,8 @@ Route::middleware(['auth:sanctum', 'throttle:api', 'tenant', \App\Http\Middlewar
     Route::get('/users', [AuthController::class, 'users']);
     Route::post('/users', [AuthController::class, 'createUser'])->middleware('canwrite:users');
     Route::put('/users/{id}', [AuthController::class, 'updateUser'])->middleware('canwrite:users');
+
+    Route::post('/feedback', [\App\Http\Controllers\PublicCaptureController::class, 'feedback'])->middleware('throttle:10,60');
 
     Route::get('/dashboard', [StrategyController::class, 'dashboard']);
 

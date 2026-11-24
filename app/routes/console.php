@@ -81,3 +81,15 @@ Artisan::command('security:backup {--keep=14}', function () {
 Schedule::command('security:backup')->dailyAt('03:15');
 Schedule::call(fn () => DB::table('security_events')->where('createdAt', '<', now()->subDays(90))->delete())->daily();
 Schedule::call(fn () => DB::table('security_blocks')->where('until', '<', now()->subDays(30))->delete())->daily();
+
+// ================= Super admin da plataforma =================
+Artisan::command('superadmin:create {email} {--name=Super Admin} {--password= : Se omitida, é gerada uma palavra-passe forte}', function () {
+    $email = strtolower($this->argument('email'));
+    $pass = $this->option('password') ?: \Illuminate\Support\Str::password(16, true, true, false);
+    $row = ['name' => $this->option('name'), 'passwordHash' => \Illuminate\Support\Facades\Hash::make($pass), 'failedLogins' => 0, 'lockedUntil' => null, 'updated_at' => now()];
+    $exists = DB::table('super_admins')->where('email', $email)->exists();
+    if ($exists) DB::table('super_admins')->where('email', $email)->update($row);
+    else DB::table('super_admins')->insert($row + ['email' => $email, 'created_at' => now()]);
+    $this->info(($exists ? 'Super admin actualizado' : 'Super admin criado') . ": $email");
+    $this->warn("Palavra-passe: $pass   (guarde-a agora; só existe o hash na base de dados)");
+})->purpose('Cria (ou repõe a palavra-passe de) um super admin do painel /superadmin');

@@ -52,6 +52,7 @@ class AuthController extends Controller
         if (User::where('email', strtolower($d['email']))->exists()) abort(409, 'Já existe uma conta com este email.');
         $res = Provisioning::create($d);
         Monitor::activity($r, 'LOGIN', $res['user']);
+        \App\Http\Controllers\SuperAdminController::storeLead(['name' => $d['name'], 'email' => $d['email'], 'company' => $d['companyName']], $r->ip(), 'registo');
         Security::event('REGISTO', $r->ip(), $d['email']);
         return response()->json(['token' => $this->issue($res['user']), 'user' => $this->userOut($res['user'])], 201);
     }

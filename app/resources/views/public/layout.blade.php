@@ -1,0 +1,6 @@
+<!doctype html><html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>@yield('title') · MarkSuite</title>
+<style>body{margin:0;background:#f4f6fa;font:15px/1.5 system-ui,sans-serif;color:#0f172a;display:grid;place-items:center;min-height:100vh;padding:20px}
+.box{background:#fff;border-radius:14px;padding:26px;width:min(480px,100%);box-shadow:0 4px 24px #0001}h1{margin:0 0 6px;font-size:22px}label{display:block;margin:12px 0 0;font-size:13px;color:#475569}
+input,select,textarea{display:block;width:100%;margin-top:4px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}button{margin-top:16px;width:100%;padding:11px;border:0;border-radius:8px;background:#2563eb;color:#fff;font:inherit;cursor:pointer}
+.hp{position:absolute;left:-9999px;height:0;width:0;opacity:0}.ok{background:#dcfce7;color:#14532d;padding:10px;border-radius:8px;margin-bottom:12px}.err{background:#fee2e2;color:#7f1d1d;padding:10px;border-radius:8px;margin-bottom:12px}</style></head>
+<body><div class="box">@if (session('ok'))<div class="ok">{{ session('ok') }}</div>@endif @if ($errors->any())<div class="err">{{ $errors->first() }}</div>@endif @yield('content')</div></body></html>
